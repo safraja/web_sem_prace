@@ -1,0 +1,54 @@
+body
+{
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+header.horni-lista.hlavni
+{
+    position: relative;
+    background: url(obrazky/hlavicka.jpg);
+    height: 300px;
+}
+header.horni-lista.hlavni h1
+{
+    position: absolute;
+    top: 70px;
+    left: 390px;
+    margin: 0;
+}
+main
+{
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 300px);
+    box-sizing: border-box;
+    margin: 0 170px;
+    background: #e8e8e8;
+    padding-top: 50px;
+    padding-bottom: 40px;
+}
+article.zajezd
+{
+    display: flex;
+    border: 1px solid gray;
+    border-radius: 20px;
+    margin: 0 200px 40px;
+    background: white;
+}
+article.zajezd:last-child
+{
+    margin-bottom: 0px;
+}
+article.zajezd img
+{
+    width: 300px;
+    height: 200px;
+}
+article.zajezd h3
+{
+    margin: 0 0 10px 0;
+}
+article.zajezd table
+{
+    text-align: left;
+}
