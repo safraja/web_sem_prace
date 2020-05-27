@@ -6,12 +6,12 @@ include_once './konfigurace.php';
 <html>
     <head>
         <meta charset='utf8'>
-        <title>Levné zájezdy</title>
+        <title>VŠE Travel | Hlavní stránka</title>
         <link type='text/css' rel='stylesheet' href='styly.css'>
     </head>
     <body>
         <header class='horni-lista hlavni'>
-            <h1>Seznam dostupných zájezdů</h1>
+            <h1>VŠE Travel</h1>
         </header>
         <main>
             <?php

@@ -27,6 +27,10 @@ main
     padding-top: 50px;
     padding-bottom: 40px;
 }
+main.formular
+{
+    padding: 60px 80px;
+}
 article.zajezd
 {
     display: flex;
@@ -51,4 +55,24 @@ article.zajezd h3
 article.zajezd table
 {
     text-align: left;
+}
+form label
+{
+    display: block;
+    padding-bottom: 5px;
+}
+form input, form select
+{
+    min-width: 220px;
+    box-sizing: border-box;
+}
+form input[type=submit]
+{
+    min-width: 0;
+}
+main.formular form
+{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
