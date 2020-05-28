@@ -1,23 +1,22 @@
-body
-{
+body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
 }
-header.horni-lista.hlavni
-{
+
+header.horni-lista.hlavni {
     position: relative;
     background: url(obrazky/hlavicka.jpg);
     height: 300px;
 }
-header.horni-lista.hlavni h1
-{
+
+header.horni-lista.hlavni h1 {
     position: absolute;
     top: 70px;
     left: 390px;
     margin: 0;
 }
-main
-{
+
+main {
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 300px);
@@ -27,52 +26,159 @@ main
     padding-top: 50px;
     padding-bottom: 40px;
 }
-main.formular
-{
+
+main.formular {
     padding: 60px 80px;
 }
-article.zajezd
-{
+
+article.zajezd {
     display: flex;
     border: 1px solid gray;
     border-radius: 20px;
     margin: 0 200px 40px;
     background: white;
 }
-article.zajezd:last-child
-{
+
+article.zajezd:last-child {
     margin-bottom: 0px;
 }
-article.zajezd img
-{
+
+article.zajezd img {
     width: 300px;
     height: 200px;
 }
-article.zajezd h3
-{
+
+article.zajezd h3 {
     margin: 0 0 10px 0;
 }
-article.zajezd table
-{
+
+article.zajezd section {
+    width: 100%;
+    padding: 20px;
+    padding-left: 0;
+}
+
+article.zajezd header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+article.zajezd h2 {
+    margin-top: 0;
+}
+
+article.zajezd table {
     text-align: left;
 }
-form label
-{
+
+form label {
     display: block;
     padding-bottom: 5px;
 }
-form input, form select
-{
+
+form input, form select {
     min-width: 220px;
     box-sizing: border-box;
 }
-form input[type=submit]
-{
+
+form input[type=submit] {
     min-width: 0;
 }
-main.formular form
-{
+
+main.formular form {
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+textarea {
+    width: 447px;
+    height: 78px;
+}
+
+#menu-lista {
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+    min-height: 15px;
+    padding: 0 170px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    font-size: 21px;
+    color: white;
+    background: #333232ab;
+}
+
+#menu-lista a {
+    text-decoration: none;
+}
+.tlacitko-prihl
+{
+    display: block;
+    padding: 8px 12px;
+    color: white;
+}
+input[type=date], input[type=time]
+{
+    min-width: 0;
+}
+.form-ceny
+{
+    display: flex;
+}
+.form-ceny input
+{
+    min-width: 80px;
+    margin-right: 20px;
+}
+#form-prihlaseni
+{
+    padding: 30px;
+    background: white;
+    border: 1px solid gray;
+    border-radius: 10px;
+    width: 400px;
+}
+#form-prihlaseni h1
+{
+    text-align: center;
+    margin: 0 0 20px;
+}
+#form-prihlaseni input
+{
+    width: 100%;
+    padding: 5px;
+}
+#form-prihlaseni input[type=submit]
+{
+    min-width: 0;
+    width: 100px;
+}
+#form-prihlaseni>div
+{
+    padding-bottom: 20px;
+}
+#stranka-prihlasrni
+{
+    align-items: center;
+}
+#menu-lista nav
+{
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+#menu-lista nav ul
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+#menu-lista nav ul a
+{
+    color: white;
+    padding: 8px 12px;
 }

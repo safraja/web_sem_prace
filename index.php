@@ -12,6 +12,9 @@ include_once './konfigurace.php';
     <body>
         <header class='horni-lista hlavni'>
             <h1>VŠE Travel</h1>
+            <?php
+            include_once "menu.php";
+            ?>
         </header>
         <main>
             <?php
@@ -22,7 +25,16 @@ include_once './konfigurace.php';
                 echo "<article class='zajezd'>";
                 echo "<figure><img src='obrazky/{$zajezd['id_zajezd']}.jpg' alt=''></figure>";
                 echo "<section>";
+                echo "<header>";
                 echo "<h2>{$zajezd['jmeno']}</h2>";
+                echo "<span>";
+                echo "<a href='objednat?id_zajezdu={$zajezd['id_zajezd']}'>Objednat</a>";
+                if(@$_SESSION["opravneni"] == "spravce")
+                {
+                    echo " <a href='pridat_zajezd?id_zajezdu={$zajezd['id_zajezd']}'>Upravit</a>";
+                }
+                echo "</span>";
+                echo "</header>";
                 echo "<p>{$zajezd['popis']}</p>";
                 echo "<h3>Podrobnosti:</h3>";
                 echo "<table>";

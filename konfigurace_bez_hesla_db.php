@@ -43,3 +43,10 @@ ini_set('session.cookie_secure', 1);
 
 //Zační DB SESSION.
 session_start();
+
+
+function Overit_datum($datum, $format = 'Y-m-d H:i')
+{
+    $d = DateTime::createFromFormat($format, $datum);
+    return $d && $d->format($format) == $datum;
+}
