@@ -16,8 +16,8 @@ include_once './konfigurace.php';
              include_once "menu.php";
              ?>
         </header>
-        <main style='padding: 100px;'>
-            <h1>Chyba 404 - Stránka nenalezena</h1>
+        <main class='odsazene'>
+            <h2>Chyba 404 - Stránka nenalezena</h2>
             <p>Požadovaná stránka nebyla nalezane.</p>
         </main>
     </body>
