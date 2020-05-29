@@ -5,7 +5,13 @@ include_once './konfigurace.php';
 <div id='menu-lista'>
     <nav>
         <ul>
-            <li><a href="index.php">Zájezdy</a></li>
+            <li><a href='index.php'>Zájezdy</a></li>
+            <?php
+            if(@$_SESSION["id_uzivatel"] != null)
+            {
+                echo "<li><a href='objednavky.php'>Objednávky</a></li>";
+            }
+            ?>
         </ul>
     </nav>
     <?php

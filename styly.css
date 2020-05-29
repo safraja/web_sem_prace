@@ -114,112 +114,108 @@ textarea {
 #menu-lista a {
     text-decoration: none;
 }
-.tlacitko-prihl
-{
+
+.tlacitko-prihl {
     display: block;
     padding: 8px 12px;
     color: white;
 }
-input[type=date], input[type=time]
-{
+
+input[type=date], input[type=time] {
     min-width: 0;
 }
-.form-ceny
-{
+
+.form-ceny {
     display: flex;
 }
-.form-ceny input
-{
+
+.form-ceny input {
     min-width: 80px;
     margin-right: 20px;
 }
-#form-prihlaseni
-{
+
+#form-prihlaseni {
     padding: 30px;
     background: white;
     border: 1px solid gray;
     border-radius: 10px;
     width: 400px;
 }
-#form-prihlaseni h1
-{
+
+#form-prihlaseni h1 {
     text-align: center;
     margin: 0 0 20px;
 }
-#form-prihlaseni input
-{
+
+#form-prihlaseni input {
     width: 100%;
     padding: 5px;
 }
-#form-prihlaseni input[type=submit]
-{
+
+#form-prihlaseni input[type=submit] {
     min-width: 0;
     width: 100px;
 }
-#form-prihlaseni>div
-{
+
+#form-prihlaseni > div {
     padding-bottom: 20px;
 }
-#stranka-prihlasrni
-{
+
+#stranka-prihlasrni {
     align-items: center;
 }
-#menu-lista nav
-{
+
+#menu-lista nav {
     justify-content: center;
     display: flex;
     align-items: center;
     color: white;
 }
-#menu-lista nav ul
-{
+
+#menu-lista nav ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
-#menu-lista nav ul a
-{
+
+#menu-lista nav ul a {
     color: white;
     padding: 8px 12px;
 }
-main.odsazene
-{
+
+main.odsazene {
     padding-left: 80px;
     padding-right: 80px;
 }
 
-@media only screen and (max-width: 1596px)
-{
-    article.zajezd
-    {
+@media only screen and (max-width: 1596px) {
+    article.zajezd {
         margin: 0 100px 40px;
     }
 }
-@media only screen and (max-width: 1230px)
-{
-    main
-    {
+
+@media only screen and (max-width: 1230px) {
+    main {
         margin: 0;
     }
-    #menu-lista
-    {
+
+    #menu-lista {
         padding: 0 50px;
     }
 }
-@media only screen and (max-width: 870px)
-{
-    article.zajezd
-    {
+
+@media only screen and (max-width: 870px) {
+    article.zajezd {
         flex-wrap: wrap;
         justify-content: center;
     }
-    article.zajezd section
-    {
+
+    article.zajezd section {
         width: auto;
         padding: 20px;
     }
-    article.zajezd img
-    {
+
+    article.zajezd img {
         width: 100%;
         object-fit: contain;
     }

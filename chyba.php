@@ -6,7 +6,7 @@ include_once './konfigurace.php';
 <html>
     <head>
         <meta charset='utf8'>
-        <title>VŠE Travel | Hlavní stránka</title>
+        <title>VŠE Travel | Chyba</title>
         <link type='text/css' rel='stylesheet' href='styly.css'>
     </head>
     <body>

@@ -30,154 +30,79 @@ if(@$_SESSION["id_uzivatel"] == null)
 }
 
 
+
+
 $chyby = [];
 
 if(@$_POST["odeslani"] != null)
 {
     $vychozi_hodnoty = $_POST;
 
-    if(empty($_POST["id_zajezd"]))
-    {
-        $typ_pridani = "pridani";
-    }
-    else
-    {
-        $typ_pridani = "upraveni";
-        $zaznam_zajezdu = Databaze::Dotaz("SELECT * FROM zajezd WHERE id_zajezd = ?",
-            array($_POST["id_zajezd"]));
 
-        if($zaznam_zajezdu == null)
-        {
-            $chyby[] = "Upravovaný zájezd neexistuje.";
-        }
-        elseif($_POST["aktualizace"] != $zaznam_zajezdu["aktualizace"])
-        {
-            $chyby[] = "Záznam před vámi upravil jiný uživatel, pro přepsání jeho záznamu znovu odešlete formulář.";
-            $vychozi_hodnoty["aktualizace"] = $zaznam_zajezdu["aktualizace"];
-        }
-
+    $objed_zajezd = Databaze::Dotaz("SELECT * FROM zajezd WHERE id_zajezd = ?", array($_POST["id_zajezd"]));
+    if($objed_zajezd == null)
+    {
+        $chyby[] = "Daný zájezd neexistuje.";
     }
 
-    $jmeno = trim(htmlspecialchars(@$_POST["jmeno"]));
-    if($jmeno == "")
+    $pocet_dospely = intval($_POST["pocet_dospely"]);
+    if(($pocet_dospely < 0) || ($pocet_dospely != $_POST["pocet_dospely"]))
     {
-        $chyby[] = "Nevyplněno jméno.";
+        $chyby[] = "Počet dospělých musí být nezáporné celé číslo.";
     }
 
-    $spravnost_datum = true;
-
-    $zacatek = @$_POST["zacatek_datum"] . " " . @$_POST["zacatek_cas"];
-    if(Overit_datum($zacatek) == false)
+    $pocet_senior = intval($_POST["pocet_senior"]);
+    if(($pocet_senior < 0) || ($pocet_senior != $_POST["pocet_senior"]))
     {
-        $chyby[] = "Zadáno nevalidní datum začátku.";
-        $spravnost_datum = false;
-    }
-    $konec = @$_POST["konec_datum"] . " " . @$_POST["konec_cas"];
-    if(Overit_datum($konec) == false)
-    {
-        $chyby[] = "Zadáno nevalidní datum konce.";
-        $spravnost_datum = false;
+        $chyby[] = "Počet seniorů/studentů musí být nezáporné celé číslo.";
     }
 
-    $stat = "";
-
-    if(empty($_POST["lokalita"]))
+    $pocet_dite = intval($_POST["pocet_dite"]);
+    if(($pocet_dite < 0) || ($pocet_dite != $_POST["pocet_dite"]))
     {
-        $chyby[] = "Nevybrána lokalita.";
-    }
-    else
-    {
-        $stat = $_POST["lokalita"];
-        $existujici_stat = Databaze::Dotaz("SELECT COUNT(*) FROM stat WHERE kod = ?",
-            array($stat))->fetch(PDO::FETCH_COLUMN);
-
-        if($existujici_stat != 1)
-        {
-            $chyby[] = "Vybrán neexistující stát.";
-        }
+        $chyby[] = "Počet dětí musí být nezáporné celé číslo.";
     }
 
-    if(empty($_POST["vozidlo"]))
+    if($pocet_dospely + $pocet_senior <= 0)
     {
-        $chyby[] = "Nevybráno vozidlo.";
+        $chyby[] = "Musí cestovat alespoň jeden dospělý/senior/student.";
     }
-    else
+    $celkovy_pocet = $pocet_dospely + $pocet_senior + $pocet_dite;
+
+    $objednano = Databaze::Dotaz("SELECT COUNT(*) FROM objednavka 
+        WHERE id_zakaznik = :id_zakaznik AND id_zajezd = :id_zajezd",
+    array(":id_zakaznik" => $_SESSION["id_uzivatel"],
+            ":id_zajezd" => $_POST["id_zajezd"]))->fetch(PDO::FETCH_COLUMN);
+
+    if($objednano > 0)
     {
-        $vozidlo = $_POST["vozidlo"];
-        $existujici_vozidlo = Databaze::Dotaz("SELECT COUNT(*) FROM dopravni_prostredek WHERE id_prostredek = ?",
-            array($vozidlo))->fetch(PDO::FETCH_COLUMN);
-
-        if($existujici_vozidlo != 1)
-        {
-            $chyby[] = "Vybráno neexistující vozidlo.";
-        }
-        else
-        {
-            if($spravnost_datum == true) //Pokud bylo zadáno validní datum, jinak nemá cenu ověřovat.
-            {
-                $obsazene_vozidlo = Databaze::Dotaz("SELECT COUNT(*) FROM zajezd 
-                    WHERE vozidlo = :vozidlo AND ((:zacatek1 > zacatek AND :zacatek2 < konec) 
-                    OR (:konec1 > zacatek AND :konec2 < konec))",
-                    array(':vozidlo' => $vozidlo, ':zacatek1' => $zacatek, ':zacatek2' => $zacatek,
-                        ':konec1' => $konec, ':konec2' => $konec))->fetch(PDO::FETCH_COLUMN);
-
-                if($obsazene_vozidlo > 0)
-                {
-                    $chyby[] = "Vybrané vozidlo je v daném termínu již zabrané.";
-                }
-            }
-        }
-    }
-
-    $cena_dospely = intval(@$_POST["cena_dospely"]);
-    if($cena_dospely < 500)
-    {
-        $chyby[] = "Zadána nízká základní cena.";
-    }
-
-    $cena_senior = intval(@$_POST["cena_senior"]);
-    if($cena_dospely < 500)
-    {
-        $chyby[] = "Zadána nízká snížená cena.";
-    }
-
-    $cena_dite = intval(@$_POST["cena_dite"]);
-    if($cena_dospely < 500)
-    {
-        $chyby[] = "Zadána nízká dětská cena.";
+        $chyby[] = "Tento zájezd už máte objednaný.";
     }
 
 
-    $popis = trim(htmlspecialchars(@$_POST["popis"]));
-    if($popis == "")
+    $pocet_objednanych = Databaze::Dotaz("SELECT SUM(pocet_celkem) FROM objednavka 
+        WHERE id_zajezd = ? GROUP BY id_zajezd)",
+array($_POST["id_zajezd"]))->fetch(PDO::FETCH_COLUMN);
+
+    $kapacita = Databaze::Dotaz("SELECT kapacita FROM dopravni_prostredek 
+        WHERE id_prostredek = ( SELECT vozidlo FROM `zajezd` WHERE `id_zajezd` = ? )",
+    array($_POST["id_zajezd"]));
+
+    if($kapacita - $pocet_objednanych - $celkovy_pocet < 0)
     {
-        $chyby[] = "Nevyplněn popis.";
+        $chyby[] = "Je nám líto, tento zájezd má pouze " . ($kapacita - $pocet_objednanych) . "volných míst.";
     }
+
 
     if(count($chyby) == 0)
     {
-        if($typ_pridani == "pridani")
-        {
-            Databaze::Dotaz("INSERT INTO zajezd (`jmeno`, `popis`, `lokalita`, `vozidlo`, 
-                    `cena_dite`, `cena_dospely`, `cena_senior`, `zacatek`, `konec`) 
-                    VALUES (:jmeno, :popis, :lokalita, :vozidlo, :cena_dite, :cena_dospely,
-                            :cena_senior, :zacatek, :konec)",
-                array(":jmeno" => $jmeno, ":popis" => $popis, ":lokalita" => $stat,
-                    ":vozidlo" => $vozidlo, ":cena_dite" => $cena_dite, ":cena_dospely" => $cena_dospely,
-                    ":cena_senior" => $cena_senior, ":zacatek" => $zacatek, ":konec" => $konec));
-        }
-        else
-        {
-            Databaze::Dotaz("UPDATE zajezd SET `jmeno`=:jmeno,`popis`=:popis,
-                    `lokalita`=:lokalita,`vozidlo`=:vozidlo,`cena_dite`=:cena_dite,`cena_dospely`=:cena_dospely,
-                    `cena_senior`=:cena_senior,`zacatek`=:zacatek,`konec`=:konec,`aktualizace`=NOW(),`moderator`=:moderator
-                    WHERE `id_zajezd`= :id_zajezd",
-                array(":jmeno" => $jmeno, ":popis" => $popis, ":lokalita" => $stat, ":vozidlo" => $vozidlo,
-                    ":vozidlo" => $vozidlo, ":cena_dite" => $cena_dite, ":cena_dospely" => $cena_dospely,
-                    ":cena_senior" => $cena_senior, ":konec" => $konec, ":zacatek" => $zacatek,
-                    ":moderator" => $_SESSION["id_uzivatel"], ":id_zajezd" => $_POST["id_zajezd"]));
-        }
+        Databaze::Dotaz("INSERT INTO `objednavka`(`id_zakaznik`, `id_zajezd`, `pocet_dite`, 
+            `pocet_dospely`, `pocet_senior`) VALUES (:id_zakaznik, :id_zajezd, :pocet_dite,
+            :pocet_dospely, :pocet_senior)",
+        array(":id_zakaznik" => $_SESSION["id_uzivatel"], ":id_zajezd" => $_POST["id_zajezd"],
+            ":pocet_dite" => $pocet_dite, ":pocet_dospely" => $pocet_dospely, ":pocet_senior" => $pocet_senior));
     }
+
 }
 
 $neexistujici_zajezd = false;
@@ -185,20 +110,51 @@ $zajezd = null;
 
 if(@$_GET["id_zajezdu"] != null)
 {
-    $zaznam = Databaze::Dotaz("SELECT zajezd.*, DATE(zacatek) AS zacatek_datum,  
+    $zajezd = Databaze::Dotaz("SELECT zajezd.*, DATE(zacatek) AS zacatek_datum,  
             TIME_FORMAT(zacatek, '%H:%i') AS zacatek_cas, DATE(konec) AS konec_datum,
             TIME_FORMAT(konec, '%H:%i') AS konec_cas
             FROM zajezd WHERE id_zajezd = ?",
         array($_GET["id_zajezdu"]))->fetch();
 
-    if($zaznam == null)
+    if($zajezd == null)
     {
         $neexistujici_zajezd = true;
         $chyby[] = "Vybraný zájezd neexistuje.";
     }
     else
     {
-        $vychozi_hodnoty = $zaznam;
+        $objednano = Databaze::Dotaz("SELECT COUNT(*) FROM objednavka 
+        WHERE id_zakaznik = :id_zakaznik AND id_zajezd = :id_zajezd",
+            array(":id_zakaznik" => $_SESSION["id_uzivatel"],
+                ":id_zajezd" => $_GET["id_zajezd"]))->fetch(PDO::FETCH_COLUMN);
+
+        if($objednano > 0)
+        {
+            ?>
+            <!doctype html>
+            <html>
+                <head>
+                    <meta charset='utf8'>
+                    <title>VŠE Travel | Objednávky</title>
+                    <link type='text/css' rel='stylesheet' href='styly.css'>
+                </head>
+                <body>
+                    <header class='horni-lista hlavni'>
+                        <h1>VŠE Travel</h1>
+                        <?php
+                        include_once "menu.php";
+                        ?>
+                    </header>
+                    <main class='odsazene'>
+                        <h2>Tento zájezd jste si již objednali.</h2>
+                        <p>Děkujeme, tento zájezd jste si úspěšně objednali. Seznam svých objednaných zájezdů
+                            naleznete <a href='objednavky.php'>zde</a>.</p>
+                    </main>
+                </body>
+            </html>
+            <?php
+            exit();
+        }
     }
 }
 else
@@ -206,6 +162,8 @@ else
     $neexistujici_zajezd = true;
     $chyby[] = "Nezadáno ID zájezdu.";
 }
+
+
 ?>
 
 <!doctype html>
@@ -252,30 +210,56 @@ else
             <form method='post'>
                 <div>
                     <label for='pocet_dospely'>Počet dospělých:</label>
-                    <input type='number' id='pocet_dospely' name='pocet_dospely'
+                    <input type='number' id='pocet_dospely' name='pocet_dospely' min='0'
                            value='<?php echo intval(@$vychozi_hodnoty["pocet_dospely"]); ?>' required>
                 </div>
 
                 <div>
                     <label for='pocet_senior'>Počet studentů/seniorů:</label>
-                    <input type='number' id='pocet_senior' name='pocet_senior'
+                    <input type='number' id='pocet_senior' name='pocet_senior' min='0'
                            value='<?php echo intval(@$vychozi_hodnoty["pocet_senior"]); ?>' required>
                 </div>
 
                 <div>
                     <label for='pocet_dite'>Počet dětí:</label>
-                    <input type='number' id='pocet_dite' name='pocet_senior'
+                    <input type='number' id='pocet_dite' name='pocet_senior' min='0'
                            value='<?php echo intval(@$vychozi_hodnoty["pocet_dite"]); ?>' required>
                 </div>
 
                 <div>
+                    <strong>Cena: <span id='cena_celkem'>0</span> Kč</strong>
+                </div>
+                <div>
                     <?php
                     echo "<input type='hidden' name='id_zajezd' value='{$zajezd["id_zajezd"]}'>";
+                    echo "<input type='hidden' name='aktualizace' value='{$zajezd["aktualizace"]}'>";
+                    echo "<input type='hidden' id='cena_dospely' name='cena_dospely' value='{$zajezd["cena_dospely"]}'>";
+                    echo "<input type='hidden' id='cena_dite' name='cena_dite' value='{$zajezd["cena_dite"]}'>";
+                    echo "<input type='hidden' id='cena_senior' name='cena_senior' value='{$zajezd["cena_senior"]}'>";
                     ?>
                     <input type='submit' name='odeslani' value='Potvrdit'>
                 </div>
             </form>
             <div><a href='index.php'>Zpět na přehled zájezdů.</a></div>
         </main>
+        <script>
+            function Proved_pocty()
+            {
+                let pocet_dosp = Number(document.getElementById('pocet_dospely').value);
+                let pocet_sen = Number(document.getElementById('pocet_senior').value);
+                let pocet_deti = Number(document.getElementById('pocet_dite').value);
+
+                let cena_dosp = Number(document.getElementById('cena_dospely').value);
+                let cena_sen = Number(document.getElementById('cena_senior').value);
+                let cena_deti = Number(document.getElementById('cena_dite').value);
+
+                let cena_celkem = pocet_dosp * cena_dosp + pocet_sen * cena_sen + pocet_deti * cena_deti;
+                document.getElementById('cena_celkem').textContent = cena_celkem;
+            }
+
+            document.getElementById('pocet_dospely').addEventListener('input', Proved_pocty);
+            document.getElementById('pocet_senior').addEventListener('input', Proved_pocty);
+            document.getElementById('pocet_dite').addEventListener('input', Proved_pocty);
+        </script>
     </body>
 </html>
