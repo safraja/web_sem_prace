@@ -20,8 +20,7 @@ if(@$_SESSION["id_uzivatel"] == null)
             </header>
             <main class='odsazene'>
                 <h2>Vyžadováno přihlášení</h2>
-                <p>Pro objednání se musíte přihlásit. <a href='prihlaseni.php'>Přihlašte se</a> nebo
-                se registrujte následující stránce: Registrace</p>
+                <p>Pro objednání se musíte přihlásit. Přihlašte se <a href='prihlaseni.php'>na této</a> stránce</p>
             </main>
         </body>
     </html>

@@ -100,11 +100,23 @@
             {
                 if($spravnost_datum == true) //Pokud bylo zadáno validní datum, jinak nemá cenu ověřovat.
                 {
-                    $obsazene_vozidlo = Databaze::Dotaz("SELECT COUNT(*) FROM zajezd 
-                    WHERE vozidlo = :vozidlo AND ((:zacatek1 > zacatek AND :zacatek2 < konec) 
-                    OR (:konec1 > zacatek AND :konec2 < konec))",
-                        array(':vozidlo' => $vozidlo, ':zacatek1' => $zacatek, ':zacatek2' => $zacatek,
-                            ':konec1' => $konec, ':konec2' => $konec))->fetch(PDO::FETCH_COLUMN);
+                    if(@$_POST["id_zajezd"] != null)
+                    {
+                        $obsazene_vozidlo = Databaze::Dotaz("SELECT COUNT(*) FROM zajezd
+                            WHERE vozidlo = :vozidlo AND id_zajezd != :id_zajezd AND ((:zacatek1 > zacatek AND :zacatek2 < konec) 
+                            OR (:konec1 > zacatek AND :konec2 < konec))",
+                            array(':vozidlo' => $vozidlo, ':zacatek1' => $zacatek, ':zacatek2' => $zacatek,
+                                ':konec1' => $konec, ':konec2' => $konec, ":id_zajezd" => $_POST["id_zajezd"]))->fetch(PDO::FETCH_COLUMN);
+                    }
+                    else
+                    {
+                        $obsazene_vozidlo = Databaze::Dotaz("SELECT COUNT(*) FROM zajezd
+                            WHERE vozidlo = :vozidlo AND ((:zacatek1 > zacatek AND :zacatek2 < konec) 
+                            OR (:konec1 > zacatek AND :konec2 < konec))",
+                            array(':vozidlo' => $vozidlo, ':zacatek1' => $zacatek, ':zacatek2' => $zacatek,
+                                ':konec1' => $konec, ':konec2' => $konec))->fetch(PDO::FETCH_COLUMN);
+                    }
+
 
                     if($obsazene_vozidlo > 0)
                     {
@@ -150,6 +162,9 @@
                 array(":jmeno" => $jmeno, ":popis" => $popis, ":lokalita" => $stat,
                     ":vozidlo" => $vozidlo, ":cena_dite" => $cena_dite, ":cena_dospely" => $cena_dospely,
                     ":cena_senior" => $cena_senior, ":zacatek" => $zacatek, ":konec" => $konec));
+
+                http_response_code("303");
+                header("Location: index.php");
             }
             else
             {
@@ -161,6 +176,9 @@
                         ":vozidlo" => $vozidlo, ":cena_dite" => $cena_dite, ":cena_dospely" => $cena_dospely,
                         ":cena_senior" => $cena_senior, ":konec" => $konec, ":zacatek" => $zacatek,
                         ":moderator" => $_SESSION["id_uzivatel"], ":id_zajezd" => $_POST["id_zajezd"]));
+
+                http_response_code("303");
+                header("Location: index.php");
             }
         }
     }
@@ -184,13 +202,18 @@
             if(count($chyby) > 0)
             {
                 $vychozi_hodnoty = $_POST;
-                $vychozi_hodnoty["aktualizace"] = $zaznam["aktualizace"];
-                $odlisne_hodnoty = [];
-                foreach ($vychozi_hodnoty as $klic => $hodnota)
+
+                if($vychozi_hodnoty["aktualizace"] != $zaznam["aktualizace"])
                 {
-                    if(array_key_exists($klic, $zaznam) && $hodnota != $zaznam[$klic])
+                    $vychozi_hodnoty["aktualizace"] = $zaznam["aktualizace"];
+
+                    $odlisne_hodnoty = [];
+                    foreach ($vychozi_hodnoty as $klic => $hodnota)
                     {
-                        $odlisne_hodnoty[$klic] = $zaznam[$klic];
+                        if(array_key_exists($klic, $zaznam) && $hodnota != $zaznam[$klic])
+                        {
+                            $odlisne_hodnoty[$klic] = $zaznam[$klic];
+                        }
                     }
                 }
             }
@@ -352,7 +375,7 @@
                         echo "<input type='hidden' name='aktualizace' value='" .
                             @$vychozi_hodnoty["aktualizace"] . "'>";
                         echo "<input type='hidden' name='id_zajezd' 
-                            value='{$vychozi_hodnoty["id_zajezd"]}'>";
+                            value='" . @$vychozi_hodnoty["id_zajezd"] . "'>";
                     }
                     ?>
                     <input type='submit' name='odeslani' value='Potvrdit'>
