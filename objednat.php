@@ -19,7 +19,7 @@ if(@$_SESSION["id_uzivatel"] == null)
                 ?>
             </header>
             <main class='odsazene'>
-                <h2>Vyžadobáno přihlášení</h2>
+                <h2>Vyžadováno přihlášení</h2>
                 <p>Pro objednání se musíte přihlásit. <a href='prihlaseni.php'>Přihlašte se</a> nebo
                 se registrujte následující stránce: Registrace</p>
             </main>
@@ -81,16 +81,16 @@ if(@$_POST["odeslani"] != null)
 
 
     $pocet_objednanych = Databaze::Dotaz("SELECT SUM(pocet_celkem) FROM objednavka 
-        WHERE id_zajezd = ? GROUP BY id_zajezd)",
+        WHERE id_zajezd = ? GROUP BY id_zajezd",
 array($_POST["id_zajezd"]))->fetch(PDO::FETCH_COLUMN);
 
     $kapacita = Databaze::Dotaz("SELECT kapacita FROM dopravni_prostredek 
         WHERE id_prostredek = ( SELECT vozidlo FROM `zajezd` WHERE `id_zajezd` = ? )",
-    array($_POST["id_zajezd"]));
+    array($_POST["id_zajezd"]))->fetch(PDO::FETCH_COLUMN);
 
     if($kapacita - $pocet_objednanych - $celkovy_pocet < 0)
     {
-        $chyby[] = "Je nám líto, tento zájezd má pouze " . ($kapacita - $pocet_objednanych) . "volných míst.";
+        $chyby[] = "Je nám líto, tento zájezd má pouze " . ($kapacita - $pocet_objednanych) . " volných míst.";
     }
 
 
@@ -101,6 +101,9 @@ array($_POST["id_zajezd"]))->fetch(PDO::FETCH_COLUMN);
             :pocet_dospely, :pocet_senior)",
         array(":id_zakaznik" => $_SESSION["id_uzivatel"], ":id_zajezd" => $_POST["id_zajezd"],
             ":pocet_dite" => $pocet_dite, ":pocet_dospely" => $pocet_dospely, ":pocet_senior" => $pocet_senior));
+
+        http_response_code("303");
+        header("Location: objednavky.php");
     }
 
 }
@@ -126,7 +129,7 @@ if(@$_GET["id_zajezdu"] != null)
         $objednano = Databaze::Dotaz("SELECT COUNT(*) FROM objednavka 
         WHERE id_zakaznik = :id_zakaznik AND id_zajezd = :id_zajezd",
             array(":id_zakaznik" => $_SESSION["id_uzivatel"],
-                ":id_zajezd" => $_GET["id_zajezd"]))->fetch(PDO::FETCH_COLUMN);
+                ":id_zajezd" => $_GET["id_zajezdu"]))->fetch(PDO::FETCH_COLUMN);
 
         if($objednano > 0)
         {
@@ -222,7 +225,7 @@ else
 
                 <div>
                     <label for='pocet_dite'>Počet dětí:</label>
-                    <input type='number' id='pocet_dite' name='pocet_senior' min='0'
+                    <input type='number' id='pocet_dite' name='pocet_dite' min='0'
                            value='<?php echo intval(@$vychozi_hodnoty["pocet_dite"]); ?>' required>
                 </div>
 

@@ -17,6 +17,11 @@ include_once './konfigurace.php';
     <?php
     if (!empty($_SESSION["id_uzivatel"]))
     {
+        if(@$_SESSION["opravneni"] == "spravce")
+        {
+            echo "<span style='display: flex;'><a href='pridat_zajezd.php'><span class='tlacitko-prihl'>Přidat zájezd</span></a>";
+            echo "<a href='objednavky_vse.php'><span class='tlacitko-prihl'>Přehled objednávek</span></a></span>";
+        }
         echo "<a href='odhlaseni.php'><span class='tlacitko-prihl'>Odhlásit se</span></a>";
     }
     else

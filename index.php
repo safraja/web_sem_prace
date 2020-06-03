@@ -22,23 +22,27 @@ include_once './konfigurace.php';
                 INNER JOIN stat ON (zajezd.lokalita = stat.kod)")->fetchAll();
             foreach ($zajezdy as $zajezd)
             {
+                $jmeno = htmlspecialchars($zajezd['jmeno']);
+                $stat = htmlspecialchars($zajezd['stat']);
+                $popis = htmlspecialchars($zajezd["popis"]);
+
                 echo "<article class='zajezd'>";
                 echo "<figure><img src='obrazky/{$zajezd['id_zajezd']}.jpg' alt=''></figure>";
                 echo "<section>";
                 echo "<header>";
-                echo "<h2>{$zajezd['jmeno']}</h2>";
+                echo "<h2>{$jmeno}</h2>";
                 echo "<span>";
-                echo "<a href='objednat?id_zajezdu={$zajezd['id_zajezd']}'>Objednat</a>";
+                echo "<a href='objednat.php?id_zajezdu={$zajezd['id_zajezd']}'>Objednat</a>";
                 if(@$_SESSION["opravneni"] == "spravce")
                 {
-                    echo " <a href='pridat_zajezd?id_zajezdu={$zajezd['id_zajezd']}'>Upravit</a>";
+                    echo " <a href='pridat_zajezd.php?id_zajezdu={$zajezd['id_zajezd']}'>Upravit</a>";
                 }
                 echo "</span>";
                 echo "</header>";
-                echo "<p>{$zajezd['popis']}</p>";
+                echo "<p>{$popis}</p>";
                 echo "<h3>Podrobnosti:</h3>";
                 echo "<table>";
-                echo "<tr><th>Stát:</th><td>{$zajezd['stat']}</td></tr>";
+                echo "<tr><th>Stát:</th><td>{$stat}</td></tr>";
 
                 $datum1 = new DateTime($zajezd['zacatek']);;
                 $datum2 = new DateTime($zajezd['konec']);;

@@ -1,7 +1,13 @@
 <?php
     include_once './konfigurace.php';
 
-    if(@$_POST["opravneni"] != "spravce")
+    function Overit_datum($datum, $format = 'Y-m-d H:i')
+    {
+        $d = DateTime::createFromFormat($format, $datum);
+        return $d && $d->format($format) == $datum;
+    }
+
+    if(@$_SESSION["opravneni"] != "spravce")
     {
         http_response_code(404);
         include_once "chyba.php";
@@ -23,7 +29,7 @@
         {
             $typ_pridani = "upraveni";
             $zaznam_zajezdu = Databaze::Dotaz("SELECT * FROM zajezd WHERE id_zajezd = ?",
-            array($_POST["id_zajezd"]));
+            array($_POST["id_zajezd"]))->fetch();
 
             if($zaznam_zajezdu == null)
             {
@@ -175,7 +181,23 @@
         }
         else
         {
-            $vychozi_hodnoty = $zaznam;
+            if(count($chyby) > 0)
+            {
+                $vychozi_hodnoty = $_POST;
+                $vychozi_hodnoty["aktualizace"] = $zaznam["aktualizace"];
+                $odlisne_hodnoty = [];
+                foreach ($vychozi_hodnoty as $klic => $hodnota)
+                {
+                    if(array_key_exists($klic, $zaznam) && $hodnota != $zaznam[$klic])
+                    {
+                        $odlisne_hodnoty[$klic] = $zaznam[$klic];
+                    }
+                }
+            }
+            else
+            {
+                $vychozi_hodnoty = $zaznam;
+            }
         }
     }
 ?>
@@ -213,6 +235,19 @@
                     echo "<div>{$chyba}</div>";
                 }
                 echo "</div>";
+
+                if(@count($odlisne_hodnoty) > 0)
+                {
+                    echo "<div>";
+                    echo "<div><strong>Odlišné hodnoty:</strong></div>";
+                    foreach ($odlisne_hodnoty as $klic => $hodnota)
+                    {
+                        $klic = htmlspecialchars($klic);
+                        $hodnota = htmlspecialchars($hodnota);
+                        echo "<div>{$klic}: {$hodnota}</div>";
+                    }
+                    echo "</div>";
+                }
             }
             ?>
             <h2>

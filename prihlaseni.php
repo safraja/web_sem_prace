@@ -42,6 +42,19 @@ if (!empty($_POST))
     }
 }
 
+
+
+require_once 'google-api-php-client-2.4.1/vendor/autoload.php';
+
+$google_klient = new Google_Client();
+$google_klient->setClientId('537251581249-k0u72vpbdurrumncns3nuhoqqot2fslc.apps.googleusercontent.com');
+$google_klient->setClientSecret('h_0ZxKEt13xRoclvtA1JAI8S');
+$google_klient->setRedirectUri('https://eso.vse.cz/~safj05/sem_prace/google_prihlaseni.php');
+$google_klient->addScope('email');
+$google_klient->addScope('profile');
+
+
+
 ?>
 
 <!doctype html>
@@ -81,8 +94,9 @@ if (!empty($_POST))
                         <label for='popis'>Heslo:</label>
                         <input type='password' id='heslo' name='heslo' required>
                     </div>
-                    <div>
-                        <input type='submit' value='Přihlásit'>
+                    <div class='google_tlac'>
+                        <input type="submit" value="Přihlásit">
+                        <?php echo '<a href="' . $google_klient->createAuthUrl() . '"><img class="google_log" src="google_log.png" /></a>'; ?>
                     </div>
                 </article>
             </form>

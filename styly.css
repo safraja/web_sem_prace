@@ -173,6 +173,7 @@ input[type=date], input[type=time] {
 }
 
 #menu-lista nav ul {
+    display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -219,4 +220,26 @@ main.odsazene {
         width: 100%;
         object-fit: contain;
     }
+}
+
+table.objednavky
+{
+    width: 100%;
+    background: white;
+    border: 1px solid gray;
+}
+table.objednavky th
+{
+    border-bottom: 1px solid gray;
+    text-align: left;
+}
+.google_tlac
+{
+    display: flex;
+    justify-content: space-between;
+}
+img.google_log
+{
+    width: 150px;
+    border: 1px solid gray;
 }
