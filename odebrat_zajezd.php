@@ -1,7 +1,7 @@
 <?php
 include_once './konfigurace.php';
 
-if(@$_SESSION["id_uzivatel"] == null)
+if(@$_SESSION["opravneni"] != "spravce")
 {
     http_response_code(404);
     include_once "chyba.php";
@@ -19,30 +19,29 @@ else
     $id = intval($_GET["id_zajezdu"]);
 
     $zajezdy = Databaze::Dotaz("SELECT COUNT(*) FROM zajezd WHERE id_zajezd = ?",
-            array($id))->fetch(PDO::FETCH_COLUMN);
+        array($id))->fetch(PDO::FETCH_COLUMN);
 
     if($zajezdy == 0)
     {
         $chyby[] = "Vybraný zájezd neexistuje.";
     }
 
-    $objednavka_exist = Databaze::Dotaz("SELECT COUNT(*) FROM objednavka
-            WHERE id_zakaznik = :id_zakaznik AND id_zajezd = :id_zajezd",
-        array(":id_zajezd" => $id, ":id_zakaznik" => $_SESSION["id_uzivatel"]))->fetch(PDO::FETCH_COLUMN);
 
-    if($objednavka_exist == 0)
+    $objednavka_exist = Databaze::Dotaz("SELECT COUNT(*) FROM objednavka
+            WHERE id_zajezd = :id_zajezd",
+        array(":id_zajezd" => $id))->fetch(PDO::FETCH_COLUMN);
+
+    if($objednavka_exist > 0)
     {
-        $chyby[] = "Tento zájezd nemáte objednaný.";
+        $chyby[] = "Tento zájezd nelze zrušit, jelikož ho má někdo objednaný.";
     }
 
     if(count($chyby) == 0)
     {
-        Databaze::Dotaz("DELETE FROM objednavka
-                WHERE id_zakaznik = :id_zakaznik AND id_zajezd = :id_zajezd",
-            array(":id_zajezd" => $id, ":id_zakaznik" => $_SESSION["id_uzivatel"]));
+        Databaze::Dotaz("DELETE FROM zajezd WHERE id_zajezd = :id_zajezd", array(":id_zajezd" => $id));
 
         http_response_code("303");
-        header("Location: objednavky.php");
+        header("Location: index.php");
     }
 }
 

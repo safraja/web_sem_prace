@@ -36,6 +36,7 @@ include_once './konfigurace.php';
                 if(@$_SESSION["opravneni"] == "spravce")
                 {
                     echo " <a href='pridat_zajezd.php?id_zajezdu={$zajezd['id_zajezd']}'>Upravit</a>";
+                    echo " <a href='odebrat_zajezd.php?id_zajezdu={$zajezd['id_zajezd']}'>Smazat</a>";
                 }
                 echo "</span>";
                 echo "</header>";
